@@ -10,10 +10,39 @@ knitr::opts_chunk$set(echo = TRUE)
 libraries
 ```{r}
 library(here)
+library(sf)
+library(terra)
+library(tidyverse)
 ```
 
 read files
+```{r, file read}
+sitebeta <- read.csv(here("Data/00_RRS_siteMaster_allSites_data.csv")) %>%
+  mutate(program=as.factor(program))
+
+#set to read as lat long
+sitebetasf <- st_as_sf(sitebeta, coords = c("lon", "lat"), crs = 4326) 
+
+```
+
+attempt to plot
 ```{r}
-sitebeta <- read.csv(here("Data/00_RRS_siteMaster_allSites_data.csv"))
+ggplot() + 
+  theme_classic() +
+  geom_sf(data = sitebetasf, aes(fill = program, shape = program)) + 
+  scale_shape_manual(values = c(21, 22, 23)) +
+  scale_fill_manual(values = c("indianred3","lightblue3","palegreen3")) +
+  scale_color_manual(values = c("firebrick", "blue4", "green4")) + 
+  labs(title = "Sites for surveys") 
+
+#This got the points on but some overlap which is tricky so ideally could make an interactive
+
+```
+
+
+intercative map attempt
+```{r}
+library(mapview)
+mapview(sitebetasf, zcol = "program") 
 ```
 
